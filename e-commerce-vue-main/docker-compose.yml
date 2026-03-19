@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  mongo-auth:
+    image: mongo:4.4
+    container_name: mongo-auth
+    networks:
+      - ecom-network
+
+  auth-service:
+    build: ./services/auth-service
+    container_name: auth-service
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      MONGODB_URI: mongodb://mongo-auth:27017/authdb
+      JWT_SECRET: token
+    depends_on:
+      - mongo-auth
+    networks:
+      - ecom-network
+    
+networks:
+  ecom-network:
+      
