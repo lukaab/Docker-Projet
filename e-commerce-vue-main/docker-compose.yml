@@ -20,6 +20,24 @@ services:
       - mongo-auth
     networks:
       - ecom-network
+  mongo-product:
+    image: mongo:4.4
+    container_name: mongo-product
+    networks:
+      - ecom-network
+  
+  product-service:
+    build: ./services/product-service
+    container_name: product-service
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      MONGODB_URI: mongodb://mongo-product:27017/productdb
+    depends_on:
+      - mongo-product
+    networks:
+      - ecom-network
     
 networks:
   ecom-network:
