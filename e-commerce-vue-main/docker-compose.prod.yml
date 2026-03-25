@@ -1,0 +1,69 @@
+services:
+  mongo-auth:
+    image: mongo:4.4
+    volumes:
+      - mongo-auth-data:/data/db
+    networks:
+      - ecom-network
+
+  auth-service:
+    image: auth-service:latest
+    environment:
+      PORT: 3001
+      MONGODB_URI: mongodb://mongo-auth:27017/authdb
+      JWT_SECRET: token
+    networks:
+      - ecom-network
+    ports:
+      - "3001:3001"
+
+  mongo-product:
+    image: mongo:4.4
+    volumes:
+      - mongo-product-data:/data/db
+    networks:
+      - ecom-network
+
+  product-service:
+    image: product-service:latest
+    environment:
+      PORT: 3000
+      MONGODB_URI: mongodb://mongo-product:27017/productdb
+    networks:
+      - ecom-network
+    ports:
+      - "3000:3000"
+
+  mongo-order:
+    image: mongo:4.4
+    volumes:
+      - mongo-order-data:/data/db
+    networks:
+      - ecom-network
+
+  order-service:
+    image: order-service:latest
+    environment:
+      PORT: 3002
+      MONGODB_URI: mongodb://mongo-order:27017/orders
+      JWT_SECRET: token
+      VITE_PRODUCT_SERVICE_URL: http://product-service:3000
+    networks:
+      - ecom-network
+    ports:
+      - "3002:3002"
+
+  frontend:
+    image: frontend:latest
+    networks:
+      - ecom-network
+    ports:
+      - "8080:80"
+
+networks:
+  ecom-network:
+
+volumes:
+  mongo-auth-data:
+  mongo-product-data:
+  mongo-order-data:
